@@ -10,6 +10,7 @@ process.on('uncaughtException', function (err) {
 });
 
 var sendIndexPage = true;
+var allowBibliographyUpdate = true;
 var searchable = {};
 var bibTexDB = null;
 
@@ -101,7 +102,7 @@ var server = http.createServer( function(req, res) {
 				
 				var payload = JSON.parse(bodyObj['payload']);
 				
-				if (typeof(payload['bibliography']) !== 'undefined') {
+				if ((allowBibliographyUpdate === true) && (typeof(payload['bibliography']) !== 'undefined')) {
 					console.log('Loading a custom bibliography:', payload.bibliography);
 					request(
 						payload.bibliography,
