@@ -1,3 +1,14 @@
+html, body {
+	margin: 0;
+	padding: 0;
+	font-size: 13pt;
+	font-family: Times New Roman, serif;
+	/*font-family: Candara,Calibri,Segoe,Segoe UI,Optima,Arial,sans-serif;*/
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+}
+
 .bibliographyItem{
 	margin-bottom: 0.75em;
 }
@@ -26,7 +37,7 @@
 }
 
 .journal:before {
-	content: ' ';
+	content: '. ';
 }
 
 .volume:before {
