@@ -1,0 +1,153 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+		<link rel="stylesheet" type="text/css" href="bibliography.css" media="all"/>
+		<link rel="stylesheet" type="text/css" href="bibliography-print.css" media="print"/>
+		<script src="jquery-1.10.2.js"></script>
+		
+		<script type="text/x-mathjax-config">
+			MathJax.Hub.Config({
+				tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+			});
+		</script>
+		<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full"></script>
+		
+		<script>
+		
+			function getQueryParams(qs) {
+				qs = qs.split('+').join(' ');
+
+				var params = {},
+					tokens,
+					re = /[?&]?([^=]+)=([^&]*)/g;
+
+				while (tokens = re.exec(qs)) {
+					params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+				}
+
+				return params;
+			}
+			
+			function post(path, params, method) {
+				method = method || "post"; // Set method to post by default if not specified.
+
+				// The rest of this code assumes you are not using a library.
+				// It can be made less wordy if you use one.
+				var form = document.createElement("form");
+				form.encoding = 'ascii';
+				form.setAttribute("method", method);
+				form.setAttribute("action", path);
+				
+				for(var key in params) {
+					if(params.hasOwnProperty(key)) {
+						var hiddenField = document.createElement("input");
+						hiddenField.setAttribute("type", "hidden");
+						hiddenField.setAttribute("name", key);
+						hiddenField.setAttribute("value", params[key]);
+
+						form.appendChild(hiddenField);
+					}
+				}
+				document.body.appendChild(form);
+				form.submit();
+			}
+
+			function sendPost() {
+				var json = JSON.parse(document.getElementById('json').value);
+				
+				//console.log(json);
+				post(
+					'',
+					{
+						payload: JSON.stringify(json),
+						key: Math.random()
+					}
+				);
+				return false;
+			}
+			
+			function removeBrackets(s) {
+				var temp = s;
+				while (temp.substr(0, 1) === '{') temp = temp.substr(1);
+				while (temp.substr(-1) === '}') temp = temp.substr(0, temp.length - 1);
+				temp = temp.replace(/--/g, '&#x2014;');
+				return temp;
+			}
+
+			function printFriendlyPagePlease() {
+				var doct = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
+				document.write(doct + document.getElementsByTagName('html')[0].innerHTML);
+			}
+			
+			function ajaxPost(json) {
+				
+				console.log('ajaxPost():', json);
+				
+				var __success = function(response) {
+					
+					var resultsArea = $('.queryResults').empty();
+					
+					for (var item in response) {
+						var current = response[item];
+						//console.log(current);
+						var s = '<li class="bibliographyItem">';
+						if (typeof(current['AUTHOR']) === 'string') s += '<span class="author">' + removeBrackets(current['AUTHOR']) + '</span>';
+						if (typeof(current['YEAR']) === 'string') s += '<span class="year">' + removeBrackets(current['YEAR']) + '</span>';
+						if (typeof(current['TITLE']) === 'string') s += '<span class="title">' + removeBrackets(current['TITLE']) + '</span>';
+						if (typeof(current['JOURNAL']) === 'string') s += '<span class="journal">' + removeBrackets(current['JOURNAL']) + '</span>';
+						if (typeof(current['VOLUME']) === 'string') s += '<span class="volume">' + removeBrackets(current['VOLUME']) + '</span>';
+						if (typeof(current['SERIES']) === 'string') s += '<span class="volume">' + removeBrackets(current['SERIES']) + '</span>';
+						if (typeof(current['PAGES']) === 'string') s += '<span class="pages">' + removeBrackets(current['PAGES']) + '</span>';
+						if (typeof(current['PUBLISHER']) === 'string') s += '<span class="fromwhere">' + removeBrackets(current['PUBLISHER']) + '</span>';
+						if (typeof(current['FROMWHERE']) === 'string') s += '<span class="fromwhere">' + removeBrackets(current['FROMWHERE']) + '</span>';
+						s += '.</li>'
+						resultsArea.append(s);
+					}
+					MathJax.Hub.Queue(["Typeset",MathJax.Hub,'resultsArea']);
+				}
+				
+				$.ajax(
+					{
+						type: "POST",
+						url: 'http://localhost:9006',
+						data: "payload=" + JSON.stringify(json),
+						success: __success,
+						dataType: 'json'
+					}
+				);
+			}
+			
+			function receiveMessage(event) {
+				console.log('event origin:', event.origin);
+				// if (event.origin !== "http://allowed.server.com:port") return;
+				ajaxPost(event.data);
+			}
+			
+			$(document).ready(function() {
+				var queryParams = getQueryParams(document.location.search);
+				if (typeof(queryParams['showDebug']) !== 'undefined') {
+					$('body').append(
+						'<div class="screenContent">' +
+							'JSON for the query:<br/>' + 
+							'<textarea id="json" rows="30" cols="80"></textarea><br/>' +
+							'<input class="queryButton" type="button" value="send json"/>' +
+						'</div>'
+					);
+					$('.queryButton').click(function() {
+						var json = JSON.parse(document.getElementById('json').value);
+						ajaxPost(json);
+					})
+				}
+				$('body').append('<ol class="queryResults" id="resultsArea"></ol>');
+				
+				if (typeof(queryParams) === 'object') ajaxPost({query:queryParams});
+				
+				window.addEventListener("message", receiveMessage, false);
+			})
+
+		</script>
+	</head>
+	<body></body>
+</html>

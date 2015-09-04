@@ -1,0 +1,54 @@
+.bibliographyItem{
+	margin-bottom: 0.75em;
+}
+
+.queryResults {
+	max-width: 210mm;
+	padding: 2.5cm;
+	line-height: 134%;
+	text-align: justify;
+}
+
+.year:before {
+	content: ' (';
+}
+
+.year:after {
+	content: '). ';
+}
+
+.title:after {
+	content: '. ';
+}
+
+.journal {
+	font-style: italic;
+}
+
+.journal:after {
+	content: ' '
+}
+
+.volume {
+	font-weight: bold;
+}
+
+.issue:before {
+	content: '(';
+}
+
+.issue:after {
+	content: ')';
+}
+
+.pages:before {
+	content: ': pp. ';
+}
+
+.pages:after {
+	content: '. ';
+}
+
+.fromwhere:before {
+	content: ' ';
+}
