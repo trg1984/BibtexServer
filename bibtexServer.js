@@ -95,7 +95,7 @@ var server = http.createServer( function(req, res) {
 					request(
 						payload.bibliography,
 						function (error, response, body) {
-							if (!error && response.statusCode == 200) {
+							if (!error && response.statusCode === 200) {
 								updateBibTex(body);
 								isBaseLoaded = false;
 								handleQuery(res, payload);
