@@ -3,6 +3,7 @@ var http = require('http');
 var qs = require('querystring');
 var btParser = require('bibtex-parser');
 var request = require('request');
+var sanitizer = require('sanitizer');
 
 process.on('uncaughtException', function (err) {
 	console.log("Uncaught exception:", err);
@@ -15,7 +16,7 @@ var bibTexDB = null;
 function updateBibTex(bibtexContent) {
 	//console.log(bibtexContent);
 	//console.log('Done.\nParsing content ...');
-	bibTexDB = btParser(bibtexContent);
+	bibTexDB = btParser(sanitizer.sanitize(bibtexContent));
 	//console.log('Done.\nCollecting a list of searchable parameters ...');
 	searchable = {};
 	for (var item in bibTexDB) {
