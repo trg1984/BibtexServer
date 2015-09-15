@@ -2,7 +2,7 @@
 	"allowBibliographyUpdate": true,
 	"host": "127.0.0.1",
 	"port": "9006",
-	"defaultBib": "villeteam.bib",
+	"defaultBib": "default.bib",
 	"accessControlAllowOrigin": "*",
 	"accessControlAllowHeaders": "*",
 	"accessContrilRequestMethod": "*"
