@@ -122,7 +122,14 @@
 			function receiveMessage(event) {
 				console.log('event origin:', event.origin);
 				// if (event.origin !== "http://allowed.server.com:port") return;
-				ajaxPost(event.data);
+				
+				if (typeof(event.data['type']) !== 'undefined') {
+				
+					switch (event.data.type) {
+						case 'query': ajaxPost(event.data); break;
+						case 'getheight': event.source.postMessage(document.body.scrollHeight, event.origin); break;
+					}
+				}
 			}
 			
 			$(document).ready(function() {
