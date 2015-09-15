@@ -111,7 +111,7 @@
 				$.ajax(
 					{
 						type: "POST",
-						url: 'http://localhost:9006',
+						url: 'http://kulmakerroin.net:9006',
 						data: "payload=" + JSON.stringify(json),
 						success: __success,
 						dataType: 'json'
@@ -142,7 +142,12 @@
 				}
 				$('body').append('<ol class="queryResults" id="resultsArea"></ol>');
 				
-				if (typeof(queryParams) === 'object') ajaxPost({query:queryParams});
+				var queryObj = {query:queryParams};
+				if (typeof(queryParams['bibliography']) !== 'undefined') {
+					queryObj['bibliography'] = queryParams['bibliography'];
+				}
+
+				if (typeof(queryParams) === 'object') ajaxPost(queryObj);
 				
 				window.addEventListener("message", receiveMessage, false);
 			})
