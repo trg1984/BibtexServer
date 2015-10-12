@@ -5,5 +5,8 @@
 	"defaultBib": "default.bib",
 	"accessControlAllowOrigin": "*",
 	"accessControlAllowHeaders": "*",
-	"accessContrilRequestMethod": "*"
+	"accessContrilRequestMethod": "*",
+	"log404": true,
+	"log403": true,
+	"log200": false
 }

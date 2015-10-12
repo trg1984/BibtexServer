@@ -29,6 +29,10 @@ function clone(a) {
 	return JSON.parse(JSON.stringify(a));
 }
 
+function intersect(arr1, arr2) {
+	return arr1.filter(function(n) { return arr2.indexOf(n) != -1 });
+}
+
 function handleQuery(res, payload) {
 	if (typeof(payload['query']) !== 'undefined') { // Things will be ANDed.
 		
@@ -38,7 +42,10 @@ function handleQuery(res, payload) {
 		for (item in bibTexDB) {
 			var check = true;
 			for (var param in query) if (check === true) {
-				var queryItem = query[param].toLowerCase();
+				var queryItem = typeof(query[param]) === 'string' ? query[param].toLowerCase() : query[param];
+				
+				//if (queryItem)
+				
 				//console.log('Current query item: ', param.toUpperCase(), ' contains ', queryItem);
 				if (searchable[param.toUpperCase()] === true) { // Such items exist that they contain the searched items.
 					
@@ -118,11 +125,36 @@ var server = http.createServer( function(req, res) {
 		
 		var response = "";
 		var urlStr = req.url.split('?')[0];
-		if (urlStr === '/') response = fs.readFileSync('index.html');
-		else response = fs.readFileSync(__dirname + urlStr);
-		
-		res.writeHead(200, {'Content-Type': 'text/html'});
-		res.end(response);
+		if (urlStr === '/'){
+			response = fs.readFileSync('index.html');
+			res.writeHead(200, {'Content-Type': 'text/html'});
+			res.end(response);
+		}
+		else if (
+			(urlStr.match(/\/bibtexServer.js$/) !== null) ||
+			(urlStr.match(/\.json$/) !== null) || 
+			(urlStr.match(/\.bib$/) !== null) || 
+			(urlStr.match(/node_modules/) !== null)
+		) {
+			res.writeHead(403, {'Content-Type': 'text/html'});
+			res.end("");
+			if (config.log403 === true) console.log('E 500: Forbidden: "' + __dirname + urlStr + '" (url: "' + urlStr + '"), Caller IP:', req.connection.remoteAddress);
+		}
+		else {
+			fs.exists(__dirname + urlStr, function(exists) {
+				if (exists && fs.lstatSync(__dirname + urlStr).isFile()) {
+					if (config.log200 === true) console.log('I 200: Found: "' + __dirname + urlStr + '" (url: "' + urlStr + '"), Caller IP:', req.connection.remoteAddress);
+					response = fs.readFileSync(__dirname + urlStr);
+					res.writeHead(200, {'Content-Type': 'text/html'});
+					res.end(response);
+				}
+				else {
+					res.writeHead(404, {'Content-Type': 'text/html'});
+					res.end("");
+					if (config.log404 === true) console.log('E 404: Path not found: "' + __dirname + urlStr + '" (url: "' + urlStr + '"), Caller IP:', req.connection.remoteAddress);
+				}
+			});
+		}
 	}
 });
 
