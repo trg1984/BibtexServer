@@ -138,12 +138,12 @@ var server = http.createServer( function(req, res) {
 		) {
 			res.writeHead(403, {'Content-Type': 'text/html'});
 			res.end("");
-			if (config.log403 === true) console.log('E 500: Forbidden: "' + __dirname + urlStr + '" (url: "' + urlStr + '"), Caller IP:', req.connection.remoteAddress);
+			if (config.log403 === true) console.log('E 500: Forbidden: "' + __dirname + urlStr + '" (url: "' + urlStr + '"), Caller IP:', req.connection.remoteAddress, new Date());
 		}
 		else {
 			fs.exists(__dirname + urlStr, function(exists) {
 				if (exists && fs.lstatSync(__dirname + urlStr).isFile()) {
-					if (config.log200 === true) console.log('I 200: Found: "' + __dirname + urlStr + '" (url: "' + urlStr + '"), Caller IP:', req.connection.remoteAddress);
+					if (config.log200 === true) console.log('I 200: Found: "' + __dirname + urlStr + '" (url: "' + urlStr + '"), Caller IP:', req.connection.remoteAddress, new Date());
 					response = fs.readFileSync(__dirname + urlStr);
 					res.writeHead(200, {'Content-Type': 'text/html'});
 					res.end(response);
@@ -151,7 +151,7 @@ var server = http.createServer( function(req, res) {
 				else {
 					res.writeHead(404, {'Content-Type': 'text/html'});
 					res.end("");
-					if (config.log404 === true) console.log('E 404: Path not found: "' + __dirname + urlStr + '" (url: "' + urlStr + '"), Caller IP:', req.connection.remoteAddress);
+					if (config.log404 === true) console.log('E 404: Path not found: "' + __dirname + urlStr + '" (url: "' + urlStr + '"), Caller IP:', req.connection.remoteAddress, new Date());
 				}
 			});
 		}
